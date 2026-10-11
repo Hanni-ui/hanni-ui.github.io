@@ -17,6 +17,13 @@
         height: 100%;
         margin: 0;
       }
+
+      .location-image {
+        display: block;
+        max-width: 240px;
+        max-height: 180px;
+        margin-top: 8px;
+      }
     </style>
   </head>
   <body>
@@ -27,7 +34,7 @@
       crossorigin=""
     ></script>
     <script>
-      const map = L.map("map").setView([50.9, 11.0], 7);
+      const map = L.map("map").setView([50.9, 11.0], 6);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
@@ -35,7 +42,48 @@
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
-      L.marker([50.9, 11.0]).addTo(map).bindPopup("Welcome to Hanni UI!");
+      const imageExtensions = ["jpeg", "jpg", "png", "webp"];
+      const imageSuffixes = ["", "-1", "-2", "-3"];
+
+      function findLocationImages(locationId) {
+        const candidates = imageSuffixes.flatMap((suffix) =>
+          imageExtensions.map(
+            (extension) => `./img/${locationId}${suffix}.${extension}`,
+          ),
+        );
+
+        return Promise.all(
+          candidates.map(
+            (imagePath) =>
+              new Promise((resolve) => {
+                const image = new Image();
+                image.onload = () => resolve(imagePath);
+                image.onerror = () => resolve(null);
+                image.src = imagePath;
+              }),
+          ),
+        ).then((imagePaths) => imagePaths.filter(Boolean).slice(0, 3));
+      }
+
+      fetch("./loc.json")
+        .then((response) => response.json())
+        .then((locations) => {
+          locations.forEach((location) => {
+            findLocationImages(location.id).then((locationImages) => {
+              const popupContent = [
+                `<strong>Location ${location.id}</strong>`,
+                ...locationImages.map(
+                  (imagePath) =>
+                    `<a href="${imagePath}" target="_blank" rel="noopener noreferrer"><img class="location-image" src="${imagePath}" alt="Location ${location.id}" /></a>`,
+                ),
+              ].join("");
+
+              L.marker([location.latitude, location.longitude])
+                .addTo(map)
+                .bindPopup(popupContent);
+            });
+          });
+        });
     </script>
   </body>
 </html>
