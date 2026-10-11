@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hanni UI Map</title>
+    <title>Hundehygienebeutel</title>
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -27,7 +27,7 @@
       crossorigin=""
     ></script>
     <script>
-      const map = L.map("map").setView([37.5665, 126.978], 13);
+      const map = L.map("map").setView([50.9, 11.0], 7);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
@@ -35,7 +35,7 @@
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
-      L.marker([37.5665, 126.978]).addTo(map).bindPopup("Welcome to Hanni UI!");
+      L.marker([50.9, 11.0]).addTo(map).bindPopup("Welcome to Hanni UI!");
     </script>
   </body>
 </html>
